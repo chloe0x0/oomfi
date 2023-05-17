@@ -1,3 +1,6 @@
+mod bloom;
+pub use bloom::*;
+
 #[cfg(test)]
 mod tests {
     #[test]
