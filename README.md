@@ -45,7 +45,7 @@ oomfi = "0.1.0"
 Lets represent the set {:3,uwu,owo}
 with a false positivity rate of ~1%
 
-```Rust
+```rust
 use oomfi::*;
 
 fn main() {
@@ -75,7 +75,7 @@ fn main() {
 
 using a custom type
 
-```Rust
+```rust
 use oomfi::*;
 
 #[derive(Clone, Copy)]
@@ -102,7 +102,7 @@ fn main() {
 ```
 
 to check if a set is the empty set
-```Rust
+```rust
 if set.is_empty() {
     println!("set = ∅");
 } else {
@@ -112,24 +112,24 @@ if set.is_empty() {
 
 to get the number of hash functions used
 
-```Rust
+```rust
 let hashes_used: u64 = set.hash_functions();
 ```
 and the number of bits used in the BitVector
 
-```Rust
+```rust
 let bits: u64 = set.number_of_bits();
 ```
 
 to get a reference to the set's BitVec
 
-```Rust
+```rust
 let bitvec: &BitVec = set.get_vec();
 ```
 
 to construct a Bloom Filter with an explicit number of hash functions
 
-```Rust
+```rust
 // Same set as the example, just with 7 hash functions
 // The optimal number of bits will be used
 let set: Bloom = Bloom::with_k(7, 3, 0.01);
@@ -139,7 +139,7 @@ A: Performance. It can be possible to use less than the optimal number of hash f
 
 to construct a Bloom Filter with an explicit number of bits
 
-```Rust
+```rust
 // Same set as the example, just with 100 bits
 // The optimal number of hash functions are used
 let set: Boom = Bloom::with_m(100, 3, 0.01);
@@ -147,7 +147,7 @@ let set: Boom = Bloom::with_m(100, 3, 0.01);
 You may use this for similar reasons as an explicit number of hash functions. It is possible to use less bits than the optimal amount to reduce memory usage. It is also possible to use more bits than the optimal amount.
 
 To construct a Bloom Filter with an explicit number of bits and hash functions
-```Rust
+```rust
 // Set with 7 hash functions and 100 bits
 let set: Bloom = Bloom::with_km(7, 100);
 ```
