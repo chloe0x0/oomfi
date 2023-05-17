@@ -1,5 +1,6 @@
 extern crate bitvec;
 
+use core::panic;
 use std::collections::hash_map::{DefaultHasher, RandomState};
 use std::hash::{BuildHasher, Hash, Hasher};
 use bitvec::vec::BitVec;
@@ -27,14 +28,15 @@ fn optima_m(n: usize, epsilon: f64) -> u64 {
 pub struct Bloom {
     /// Bit-Vector of the data (more memory compact than [u8;N])
     data: BitVec,
-    /// Optimal number of hash functions
+    /// number of hash functions
     k: u64, 
-    /// Optimal size of the BloomFilter in bits
+    /// size of the BloomFilter in bits
     m: u64,
     /// Hash Functions
     /// Why only 2?
     /// See this paper: https://www.eecs.harvard.edu/~michaelm/postscripts/rsa2008.pdf
-    ks: [DefaultHasher; 2]
+    h1: DefaultHasher,
+    h2: DefaultHasher
 }
 
 impl Bloom {
@@ -42,31 +44,109 @@ impl Bloom {
         // Compute optimal m and k
         let m = optima_m(n, epsilon);
         let k = optima_k(epsilon);
-        // Hash Functions
-        let ks = [
-            RandomState::new().build_hasher(),
-            RandomState::new().build_hasher()
-        ];
-
         Bloom {
             /// Init all bits to 0, using m bits
             data: bitvec![0; m as usize],
             k,
             m, 
-            ks
+            h1: RandomState::new().build_hasher(),
+            h2: RandomState::new().build_hasher()
+        }
+    }
+
+    /// Construct a bloom filter with an explicit number of hash functions
+    /// panics if the number is less than 2
+    /// also takes as input
+    /// n: the expected number of elements in the set
+    /// epsilon: the desired false positive rate
+    pub fn with_k(k: u64, n: usize, epsilon: f64) -> Self {
+        if k < 2 {
+            panic!("Too few hash functions (need at least 2)");
+        }
+
+        let m = optima_m(n, epsilon);
+        Bloom {
+            data: bitvec![0; m as usize],
+            k,
+            m,
+            h1: RandomState::new().build_hasher(),
+            h2: RandomState::new().build_hasher()
+        }
+    }
+
+    /// Construct a Bloom Filter with m bits
+    /// Will use the optimal number of hash functions
+    /// panics if m == 0
+    /// also takes as input:
+    /// epsilon: desired false positive rate
+    pub fn with_m(m: u64, epsilon: f64) -> Self {
+        if m == 0 {
+            panic!("Cannot have 0 bits!");
+        }
+
+        let k = optima_k(epsilon);
+        Bloom {
+            data: bitvec![0; m as usize],
+            k,
+            m,
+            h1: RandomState::new().build_hasher(),
+            h2: RandomState::new().build_hasher()
+        }
+    }
+
+    /// Construct a bloom filter with m bits and k hash functions
+    /// panics if either m==0 or k < 2
+    pub fn with_km(k: u64, m: u64) -> Self {
+        if k < 2 {
+            panic!("Too few hash functions (need at least 2)");
+        } 
+        if m == 0 {
+            panic!("Cannot have 0 bits!");
+        }
+
+        Bloom {
+            data: bitvec![0; m as usize],
+            k,
+            m,
+            h1: RandomState::new().build_hasher(),
+            h2: RandomState::new().build_hasher()
         }
     }
 
     /// Clear the BitVector (removes all elements from teh set)
     #[inline(always)]
     pub fn clear(&mut self) {
-        self.data.fill_with(|_x| false);
+        self.data.fill(false);
+    }
+
+    /// How many hash functions are used in the BloomFilter
+    #[inline(always)]
+    pub fn hash_functions(&self) -> u64 {
+        self.k
+    }
+
+    /// How many bits are used in teh BitVector
+    #[inline(always)]
+    pub fn number_of_bits(&self) -> u64 {
+        self.m
+    }
+
+    /// Check if the set is the empty set
+    #[inline(always)]
+    pub fn is_empty(&self) -> bool {
+        self.data.count_ones() == 0
+    }
+
+    /// Get a reference to the BitVec
+    #[inline(always)]
+    pub fn get_vec(&self) -> &BitVec {
+        &self.data
     }
 
     // Compute h1(x) and h2(x) for some element x
     fn hash_element(&mut self, element: impl Hash) -> (u64, u64) {
-        let h1 = &mut self.ks[0].clone();
-        let h2 = &mut self.ks[1].clone();
+        let h1 = &mut self.h1.clone();
+        let h2 = &mut self.h2.clone();
 
         element.hash(h1);
         element.hash(h2);
@@ -75,6 +155,7 @@ impl Bloom {
     }
 
     // Compute gi(x) within the bit vector for some element x given h1(x), h2(x)
+    #[inline(always)]
     fn compute_index(&mut self, h1: u64, h2: u64, i: u64) -> usize {
         ((h1.wrapping_add(i.wrapping_mul(h2))) % self.m) as usize
     }
