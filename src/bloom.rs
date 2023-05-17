@@ -15,7 +15,7 @@ const LN2_2: f64 = std::f64::consts::LN_2 * std::f64::consts::LN_2;
 fn optima_k(epsilon: f64) -> u64 {
     (-epsilon.ln()/std::f64::consts::LN_2).ceil() as u64
 }
-
+ 
 /// Function to compute the optimal number of bits given:
 /// n: number of elements to insert,
 /// epislon: desired false positivity rate
