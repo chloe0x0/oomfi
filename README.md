@@ -52,6 +52,7 @@ fn main() {
     // Lets representing the set {:3, uwu, owo}
     // n=3, false positive rate of 1%
     // uses the optimal number of hash functions and bits
+    // It can store any datatype which implements Hash
     let mut set = Bloom::new(3, 0.01);
     // Insert elements into the set
     set.insert(":3");
@@ -69,6 +70,34 @@ fn main() {
     assert_ne!(set.query(":3"), true);
     assert_ne!(set.query("uwu"), true);
     assert_ne!(set.query("owo"), true);
+}
+```
+
+using a custom type
+
+```Rust
+use oomfi::*;
+
+#[derive(Clone, Copy)]
+struct Mage<'a> {
+    name: &'a str,
+    level: u64,
+    mana: f64
+}
+
+impl Hash for Mage<'_> {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.name.hash(state);
+        self.level.hash(state);
+    }
+}
+
+fn main() {
+    let Malori = Mage {name: &"Malori", level: u64::MAX, mana: f64::MAX};
+
+    let set = Bloom::new(3, 0.01);
+    set.insert(Malori);
+    assert!(set.query(&Malori));
 }
 ```
 
