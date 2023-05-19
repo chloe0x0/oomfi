@@ -17,3 +17,5 @@ path = "src/lib.rs"
 
 [dependencies]
 bitvec = "1.0.1"
+fxhash = "0.2.1"
+ahash = "0.8.3"

@@ -1,3 +1,6 @@
+extern crate bitvec;
+extern crate ahash;
+
 mod bloom;
 pub use bloom::*;
 
@@ -22,9 +25,9 @@ mod tests {
     /// Test that the bloom filter works for other data types
     #[test]
     fn test_types() {
-        let mut set = Bloom::new(25, 0.01);
+        let mut set = Bloom::new(100_000, 0.01);
 
-        for i in 0..26 {
+        for i in 0..100_000 {
             set.insert(i);
             assert!(set.query(i));
         }

@@ -127,6 +127,12 @@ to get a reference to the set's BitVec
 let bitvec: &BitVec = set.get_vec();
 ```
 
+to estimate the number of elements in a bloom filter
+
+```rust
+let len: usize = set.estimate_len();
+```
+
 to construct a Bloom Filter with an explicit number of hash functions
 
 ```rust
