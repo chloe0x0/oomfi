@@ -19,7 +19,7 @@ In oomfi only 2 hash functions are used! This is because of an efficient scheme 
 $$g_i(x) = h_1(x) + ih_2(x)$$
 $$i \in [0, k)$$
 
-This is a significant speedup compared to using K seperate hash functions! With this idea oomfi only really computes 2 hash values using Rust's DefaultHasher for query/ insertion calls regardless of the number of hash functions. It was proven to not impact the asymptotic false positive rate of a standard bloom filter. 
+This is a significant speedup compared to using K seperate hash functions! With this idea oomfi only really computes 2 hash values using AHash for query/ insertion calls regardless of the number of hash functions. It was proven to not impact the asymptotic false positive rate of a standard bloom filter. 
 
 # Getting Started
 
