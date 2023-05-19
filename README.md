@@ -24,7 +24,7 @@ This is a significant speedup compared to using K seperate hash functions! With 
 # Getting Started
 
 ### Dependencies
-oomfi currently only depends on the [bitvec](https://crates.io/crates/bitvec) crate.
+oomfi currently only depends on the [bitvec](https://crates.io/crates/bitvec) crate, and [ahash](https://crates.io/crates/ahash).
 (future releases may depend on Serde for serialization of Bloom Filters)
 
 ## Installation
