@@ -37,7 +37,7 @@ in your project directory
 
 or add the following line to the dependencies in your cargo.toml
 ```toml
-oomfi = "0.1.1"
+oomfi = "0.1.2"
 ```
 
 ## Usage
