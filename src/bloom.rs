@@ -1,16 +1,16 @@
-use std::hash::{Hash, BuildHasher, Hasher};
-use bitvec::vec::BitVec;
-use bitvec::bitvec;
 use ahash::{AHasher, RandomState};
+use bitvec::bitvec;
+use bitvec::vec::BitVec;
+use std::hash::{BuildHasher, Hash, Hasher};
 
 // ln(2)^2, used when computing optimal m
 const LN2_2: f64 = std::f64::consts::LN_2 * std::f64::consts::LN_2;
 
-/// Function to compute the optimal number of hash functions given: 
+/// Function to compute the optimal number of hash functions given:
 /// epsilon: The desired false positivity rate
 #[inline(always)]
 fn optima_k(epsilon: f64) -> u64 {
-    (-epsilon.ln()/std::f64::consts::LN_2).ceil() as u64
+    (-epsilon.ln() / std::f64::consts::LN_2).ceil() as u64
 }
 
 /// Function to compute the optimal number of bits given:
@@ -27,14 +27,14 @@ pub struct Bloom {
     /// Bit-Vector of the data (more memory compact than [u8;N])
     data: BitVec,
     /// number of hash functions
-    k: u64, 
+    k: u64,
     /// size of the BloomFilter in bits
     m: u64,
     /// Hash Functions
     /// Why only 2?
     /// See this paper: https://www.eecs.harvard.edu/~michaelm/postscripts/rsa2008.pdf
     h1: AHasher,
-    h2: AHasher
+    h2: AHasher,
 }
 
 impl Bloom {
@@ -47,9 +47,9 @@ impl Bloom {
             /// Init all bits to 0, using m bits
             data: bitvec![0; m as usize],
             k,
-            m, 
+            m,
             h1: RandomState::new().build_hasher(),
-            h2: RandomState::new().build_hasher()
+            h2: RandomState::new().build_hasher(),
         }
     }
 
@@ -70,8 +70,8 @@ impl Bloom {
             k,
             m,
             h1: RandomState::new().build_hasher(),
-            h2: RandomState::new().build_hasher()
-       }
+            h2: RandomState::new().build_hasher(),
+        }
     }
 
     /// Construct a Bloom Filter with m bits
@@ -90,8 +90,8 @@ impl Bloom {
             k,
             m,
             h1: RandomState::new().build_hasher(),
-            h2: RandomState::new().build_hasher()
-       }
+            h2: RandomState::new().build_hasher(),
+        }
     }
 
     /// Construct a bloom filter with m bits and k hash functions
@@ -99,7 +99,7 @@ impl Bloom {
     pub fn with_km(k: u64, m: u64) -> Self {
         if k < 2 {
             panic!("Too few hash functions (need at least 2)");
-        } 
+        }
         if m == 0 {
             panic!("Cannot have 0 bits!");
         }
@@ -109,8 +109,8 @@ impl Bloom {
             k,
             m,
             h1: RandomState::new().build_hasher(),
-            h2: RandomState::new().build_hasher()
-       }
+            h2: RandomState::new().build_hasher(),
+        }
     }
 
     /// Estimate the number of elements in the set
@@ -120,7 +120,7 @@ impl Bloom {
         let k = self.k as f64;
         let n_star = -(m / k) * (1.0f64 - (popcount / m)).ln();
 
-        n_star as usize 
+        n_star as usize
     }
 
     /// Clear the BitVector (removes all elements from teh set)
@@ -137,7 +137,7 @@ impl Bloom {
 
     /// How many bits are used in teh BitVector
     #[inline(always)]
-    pub fn number_of_bits(&self) -> u64 {
+    pub fn len(&self) -> u64 {
         self.m
     }
 
@@ -151,6 +151,16 @@ impl Bloom {
     #[inline(always)]
     pub fn get_vec(&self) -> &BitVec {
         &self.data
+    }
+
+    /// Insert all elements from an Iterator
+    pub fn insert_all<I, T: Hash>(&mut self, elems: I)
+    where
+        I: IntoIterator<Item = T>,
+    {
+        for ele in elems {
+            self.insert(ele);
+        }
     }
 
     // Compute h1(x) and h2(x) for some element x
@@ -183,8 +193,8 @@ impl Bloom {
                 return false;
             }
         }
-        
-        true 
+
+        true
     }
 
     /// Insert a Hashable element into the BitVector
@@ -202,5 +212,3 @@ impl Bloom {
         }
     }
 }
-
-

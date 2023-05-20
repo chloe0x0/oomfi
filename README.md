@@ -118,7 +118,7 @@ let hashes_used: u64 = set.hash_functions();
 and the number of bits used in the BitVector
 
 ```rust
-let bits: u64 = set.number_of_bits();
+let bits: u64 = set.len();
 ```
 
 to get a reference to the set's BitVec
@@ -131,6 +131,16 @@ to estimate the number of elements in a bloom filter
 
 ```rust
 let len: usize = set.estimate_len();
+```
+
+to insert all values from a type which implements the IntoIterator trait (and whose elements implement the Hash trait)
+
+```rust
+let elements = vec![0, 1, 2, 3];
+set.insert_all(elements);
+// or
+let elements = [0, 1, 2, 3];
+set.insert_all(elements);
 ```
 
 to construct a Bloom Filter with an explicit number of hash functions

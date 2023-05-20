@@ -1,5 +1,5 @@
-extern crate bitvec;
 extern crate ahash;
+extern crate bitvec;
 
 mod bloom;
 pub use bloom::*;
@@ -38,7 +38,7 @@ mod tests {
         struct Mage<'a> {
             name: &'a str,
             level: u64,
-            mana: f64
+            mana: f64,
         }
 
         impl Hash for Mage<'_> {
@@ -48,7 +48,11 @@ mod tests {
             }
         }
 
-        let Malori = Mage {name: &"Malori", level: u64::MAX, mana: f64::MAX};
+        let Malori = Mage {
+            name: &"Malori",
+            level: u64::MAX,
+            mana: f64::MAX,
+        };
         set.insert(Malori);
         assert!(set.query(&Malori));
     }
@@ -59,13 +63,13 @@ mod tests {
         // Optimal values for n = 100, epsilon= 0.01 ought to be m=959, k=7
         let set = Bloom::new(100, 0.01);
         assert_eq!(set.hash_functions(), 7);
-        assert_eq!(set.number_of_bits(), 959);
+        assert_eq!(set.len(), 959);
         // n=100000, epsilon=0.0001, m = 1917012, k = 13
         let set = Bloom::new(100_000, 0.0001);
         assert_eq!(set.hash_functions(), 14);
-        assert_eq!(set.number_of_bits(), 1917012);
+        assert_eq!(set.len(), 1917012);
         let set = Bloom::new(10, 0.0001);
         assert_eq!(set.hash_functions(), 14);
-        assert_eq!(set.number_of_bits(), 192);
+        assert_eq!(set.len(), 192);
     }
 }
