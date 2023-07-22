@@ -40,6 +40,12 @@ or add the following line to the dependencies in your cargo.toml
 oomfi = "0.1.2"
 ```
 
+to test that everything works
+
+```console
+λ >>> cargo test --release
+```
+
 ## Usage
 
 Lets represent the set {:3,uwu,owo}
@@ -167,3 +173,4 @@ To construct a Bloom Filter with an explicit number of bits and hash functions
 // Set with 7 hash functions and 100 bits
 let set: Bloom = Bloom::with_km(7, 100);
 ```
+
