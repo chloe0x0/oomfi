@@ -43,7 +43,7 @@ oomfi = "0.1.2"
 to test that everything works
 
 ```console
-λ >>> cargo test --release
+λ >>> cargo test
 ```
 
 ## Usage
