@@ -1,4 +1,7 @@
-# oomfi 🌸
+<h1 align='center'>
+    oomfi 🌸
+</h1>
+
 A small, 🔥 *blazingly fast* 🔥, bloom filter implemented in Rust (yes, another one).
 
 A bloom filter is a probabalistic data structure used for fast, memory efficient representations of Sets. 
